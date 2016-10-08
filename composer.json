@@ -1,0 +1,29 @@
+{
+    "name": "thuata/listenerbundle",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "description": "Socket listener tools",
+    "authors": [
+        {
+            "name": "Anthony Maudry",
+            "email": "anthony.maudry@thuata.com",
+            "homepage": "http://www.thuata.com/"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Thuata\\ListenerBundle\\": "" }
+    },
+    "require": {
+        "php": "~7.1",
+        "symfony/symfony": ">=3",
+        "incenteev/composer-parameter-handler": "~2.0"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "~2.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "master"
+        }
+    }
+}
