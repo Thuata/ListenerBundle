@@ -1,0 +1,4 @@
+services:
+    thuata_listener.listener.service:
+        class: Thuata\ListenerBundle\Service\ListenerService
+        arguments: ['@kernel', '%thuata_listener.register_path%']
