@@ -16,11 +16,18 @@
     "require": {
         "php": "~7.1",
         "symfony/symfony": ">=3",
-        "incenteev/composer-parameter-handler": "~2.0"
+        "incenteev/composer-parameter-handler": "~2.0",
+        "thuata/componentbundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:Thuata/ComponentBundle.git"
+        }
+    ],
     "extra": {
         "branch-alias": {
             "dev-master": "master"
