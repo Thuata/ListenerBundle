@@ -26,6 +26,8 @@
 namespace Thuata\ListenerBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Thuata\ComponentBundle\Command\ThuataCommandTrait;
 use Thuata\ListenerBundle\Component\Listener;
 use Thuata\ListenerBundle\Exception\ListenerFileNotFoundException;
@@ -82,6 +84,20 @@ abstract class ListenerCommand extends ContainerAwareCommand
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->writeThuataASCIILogo($output);
+
+        $res = $this->doExecute($input, $output);
+
+        $this->writeGoodBy($output);
+
+        return $res;
+    }
+
+    /**
      * Gets the command name
      *
      * @return string
@@ -94,6 +110,16 @@ abstract class ListenerCommand extends ContainerAwareCommand
      * @return string
      */
     abstract public function getCommandDescription() : string;
+
+    /**
+     * Executes the command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
+    abstract protected function doExecute(InputInterface $input, OutputInterface $output) : int;
 
     /**
      * Gets the run listener command name
