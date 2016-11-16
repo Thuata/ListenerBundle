@@ -30,6 +30,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\VarDumper\VarDumper;
 use Thuata\ListenerBundle\Component\Listener;
+use Thuata\ListenerBundle\Exception\TreatMessageNotImplementedException;
 
 /**
  * <b>ListenerCommand</b><br>
@@ -90,21 +91,16 @@ abstract class RunListenerCommand extends ListenerCommand
         $output->writeln(sprintf(self::START_LISTEN, $host, (string)$listener->getListenerPort()));
         $output->writeln(sprintf(self::HOWTO_STOP, $this->getStopCommandMessage()));
 
-        $stopCommandMessage = $this->getStopCommandMessage();
-        $scope = $this;
 
-        $listener->listen(function ($message, $name, $port) use ($output, $stopCommandMessage, $scope) {
-            if ($message === $this->getStopCommandMessage()) {
-                $output->writeln(self::MESSAGE_STOP);
+        $this->beforeListen($listener, $input, $output);
 
-                return Listener::RESULT_STOP_LISTEN;
-            }
-            $scope->treatMessage($message, $name, $port, $output);
+        $this->runListener($listener, $input, $output);
 
-            return Listener::RESULT_OK;
-        });
+        $this->afterListen($listener, $input, $output);
 
         $listener->close();
+
+        $this->afterClose($input, $output);
 
         $this->getContainer()->get('thuata_listener.listener.service')->forgetListener($listener);
 
@@ -118,6 +114,67 @@ abstract class RunListenerCommand extends ListenerCommand
      * @param string                                            $remoteAddress
      * @param string                                            $remotePort
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @throws TreatMessageNotImplementedException
      */
-    abstract protected function treatMessage($message, string $remoteAddress, string $remotePort, OutputInterface $output);
+    protected function treatMessage($message, string $remoteAddress, string $remotePort, OutputInterface $output)
+    {
+        throw new TreatMessageNotImplementedException(get_class($this));
+    }
+
+    /**
+     * Runs the listener
+     *
+     * @param Listener        $listener
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function runListener(Listener $listener, InputInterface $input, OutputInterface $output)
+    {
+        $stopCommandMessage = $this->getStopCommandMessage();
+        $scope = $this;
+
+        $listener->listen(function ($message, $name, $port) use ($output, $stopCommandMessage, $scope) {
+            if ($message === $this->getStopCommandMessage()) {
+                $output->writeln(self::MESSAGE_STOP);
+
+                return Listener::RESULT_STOP_LISTEN;
+            }
+            $scope->treatMessage($message, $name, $port, $output);
+
+            return Listener::RESULT_OK;
+        });
+    }
+
+    /**
+     * Called before listen
+     *
+     * @param Listener        $listener
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function beforeListen(Listener $listener, InputInterface $input, OutputInterface $output)
+    {
+    }
+
+    /**
+     * Called after listen
+     *
+     * @param Listener        $listener
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function afterListen(Listener $listener, InputInterface $input, OutputInterface $output)
+    {
+    }
+
+    /**
+     * Called after close
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function afterClose(InputInterface $input, OutputInterface $output)
+    {
+    }
 }
